@@ -12,6 +12,7 @@ The API provided so far:
 - http://localhost:5000/createClinic
 - /refreshqueue/\<iden\>
 - /queue   [POST]
+- /registration  [POST]
 
 The update and createClinic, these two are POST requests and the information you should provide should look like this :
 {
@@ -31,3 +32,7 @@ In the newer versio  I will eradicate everything that contains id in the request
 **/refreshqueue** is actually used to refresh all doctors' current queue number as 0. In a word, after one day work, you will want to refresh the queue number, make it 0 for the next day.
 
 **/queue** is a POST request, you send information as a JSON with the key "uuid" and "clinic\_name", you get return with a JSON that contains informatin about "ququq\_num", "key", and "doctor".
+
+**/registration** is also a POST request. You will have to make sure that you pass the name, ic_num and queue_num. 
+You can also provide phone_num with it.
+
