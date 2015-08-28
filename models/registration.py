@@ -28,3 +28,28 @@ def register(name, ic_num, queue_num, phone_num=None):
     session.commit()
 
     return "success"
+
+def query_patient(queue_num):
+    q = session.query(Queue).filter_by(queue_num=queue_num).first()
+    result = {}
+    if not q:
+        result['error'] = "no such queue number!"
+        return result
+    if q.patient_id == None:
+        result['error'] = "Queue number not registered!"
+        return result
+    if q.doctor_id:
+        result["error"] = "what the hell! This queue number is not binded to a doctor!"
+        return result
+
+    doc = session.query(Doctor).filter_by(id=q.doctor_id).first()
+    if not doc:
+        result["error"] = "Eh, I think this doctor is dead, because he is not in database."
+        return result
+
+    patient = session.query(Patient).filter_by(patient_id=q.patient_id).first()
+    patient_detail = session.query(PatientDetail).filter_by(id=patient.detail).first()
+    result["doctor"] = doc.name
+    result["patient_name"] = patient.name
+    result["ic_num"] = patient_detail.ic_num
+    return result

@@ -50,12 +50,9 @@ def hostest():
 @app.route('/queryall')
 def queryall():
     a = session.query(Clinic).all()
-    result = {}
-    print len(a)
     res = []
-
     for j in a:
-        print j
+        result = {}
         for i in j.__dict__:
             if i[0] == '_':
                 continue
@@ -100,16 +97,17 @@ def createClinic():
     print data.getlist('name')
     if not data:
         return "No data!"
-    if 'id' not in data:
-        return "at least tell me the id!!!!"
-    a = session.query(Clinic).filter_by(id=data['id']).first()
+    count = session.query(Clinic).count()
+    # this oine line is not necessary but still there might be some
+    # problems
+    a = session.query(Clinic).filter_by(id=id+1).first()
     if a:
         return "ID Already Exist"
     params = ['name', 'aviva_code',\
                  'zone', 'estate','address1','address2',\
                  'postal','telephone','fax','weekday',\
                  'saturday','sunday','public_holiday','remarks','latitude','longitude']
-    clinic = Clinic(id = data['id'])
+    clinic = Clinic(id = count+1)
     if 'name' in data:
         clinic.name = data['name']
     if 'address_1' in data:
@@ -121,7 +119,7 @@ def createClinic():
     session.add(clinic)
     session.commit()
 
-    return "SUCCESS"
+    return str(count+1)
 
 
 
@@ -290,6 +288,11 @@ def registData():
         patient.name = data["name"]
     session.commit()
     result["success"] = "success"
+    return flask.jsonify(**result)
+
+@app.route('/querypatient/<queue_num>')
+def queryPatient(queue_num):
+    result = registration.query_patient(queue_num)
     return flask.jsonify(**result)
 
 
