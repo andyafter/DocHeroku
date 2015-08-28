@@ -269,9 +269,28 @@ def registration():
 @app.route('/registerdata',methods = ['POST'])
 def registData():
     # modification for registration
+    # just name the data that you want to modify,
+    # the data that can be modified is :
+    # phone_num, name
+    # you can only search by ic_num
+    data = request.get_json()
+    result = {}
+    if not data:
+        result["error"] = "No Data!"
+        flask.jsonify(**result)
+    if "ic_num" not in data:
+        result["error"] = "You have to provide IC number!"
+        flask.jsonify(**result)
 
-
-    return "SUCCESS"
+    patient_detail = session.query(PatientDetail).filter_by(ic_num=data["ic_num"]).first()
+    patient = session.query(Patient).filter_by(patient_id=patient_detail.patient_id).first()
+    if "phone_num" in data:
+        patient_detail.phone_num = data["phone_num"]
+    if "name" in data:
+        patient.name = data["name"]
+    session.commit()
+    result["success"] = "success"
+    return flask.jsonify(**result)
 
 
     
