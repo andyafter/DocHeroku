@@ -7,14 +7,17 @@ print "Start Initiation of Database Schema"
 print "Adding cases into the database"
 
 from database import *
-c = session.query(Clinic).filter_by(id=1).first()
+c = session.query(Clinic).filter_by(name='RIDGEWOOD MEDICAL CLINIC').first()
 
-'''
+
 # already done
 doc1 = Doctor(id=1)
 doc1.name= "Andy"
 c.doctors.append(doc1)
+doc2 = Doctor(id=2)
+doc2.name= "Henry"
 session.add(doc1)
-'''
-#session.commit()
+session.add(doc2)
+
+session.commit()
 

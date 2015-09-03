@@ -80,9 +80,17 @@ class Patient(Base):
     __tablename__ = 'patient'
     patient_id = Column(Integer, primary_key=True)
     name = Column(String(64))
+    address_1 = Column(String(256))
+    address_2 = Column(String(256))
+    blood_group = Column(String(24))
+    ## incase there is something like negative, positive etc.
+    phone = Column(String(32))
+
     detail = relationship('PatientDetail', backref='patient')
-    insurance = relationship('Insurance', backref='insurance')
+    insurance = relationship('Insurance', backref='patient')
     queue = relationship('Queue', backref='patient')
+    insurance_patient = relationship('InsurancePatient', backref='patient')
+
 
     def __init__(self, patient_id, name=None):
         self.patient_id = patient_id
@@ -98,8 +106,8 @@ class Patient(Base):
 class PatientDetail(Base):
     __tablename__ = 'patient_detail'
     id = Column(Integer, primary_key=True)
-    patient_id = Column(String(10),ForeignKey('patient.patient_id'))
-    clinic_id = Column(String(10),ForeignKey('clinic.id'))     ### here you need a foreign key linking to the clinic
+    patient_id = Column(String(10), ForeignKey('patient.patient_id'))
+    clinic_id = Column(String(10), ForeignKey('clinic.id'))     ### here you need a foreign key linking to the clinic
     ic_num = Column(String(32))
     phone_num = Column(String(64))
 
@@ -111,26 +119,6 @@ class PatientDetail(Base):
 
     def __repr__(self):
         return '<Patient Detail of %r>' % (self.patient_id)
-
-
-
-class Doctor(Base):
-    __tablename__ = 'doctors'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64))
-    # current queue num is used to record the current queue status of
-    # the doctor
-    current_queue_num = Column(Integer)
-    clinic_id = Column(String(10), ForeignKey('clinic.id'))   ## add some foreign key factor inside
-    queue_id = relationship('Queue', backref='queue')
-
-    def __init__(self, id, name=None,clinic_id=None):
-        self.id = id
-        self.name = name
-        self.clinic_id = clinic_id
-
-    def __repr__(self):
-        return '<Doctor %r>' % (self.name)
 
 
 class Clinic(Base):
@@ -157,8 +145,8 @@ class Clinic(Base):
     # foreign keys
     # this one here is for querying patients of a hospital
     patient_detail = relationship('PatientDetail', backref='clinic')
-    doctors = relationship('Doctor', backref='doctors')
-
+    doctors = relationship('Doctor', backref='clinic')
+    clinic_insurance = relationship('ClinicInsurance', backref='clinic')
 
     def __init__(self, id,name=None, aviva_code=None,\
                  zone=None, estate=None,address1=None,address2=None,\
@@ -185,7 +173,33 @@ class Clinic(Base):
         
     def __repr__(self):
         return '<Clinic %r>' % (self.name)
-    
+
+
+class Doctor(Base):
+    __tablename__ = 'doctors'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64))
+    # current queue num is used to record the current queue status of
+    # the doctor
+    current_queue_num = Column(Integer)
+    clinic_id = Column(String(10), ForeignKey('clinic.id'))   ## add some foreign key factor inside
+    queue_id = relationship('Queue', backref='doctors')
+
+    def __init__(self, id, name=None,clinic_id=None):
+        self.id = id
+        self.name = name
+        self.clinic_id = clinic_id
+
+    def __repr__(self):
+        return '<Doctor %r>' % (self.name)
+
+
+class ClinicInsurance(Base):
+    __tablename__='clinic_insurance'
+    id = Column(Integer, primary_key=True)
+    insurance_id = Column(Integer, ForeignKey('insurance.insurance_id'))
+    clinic_id = Column(Integer, ForeignKey('clinic.id'))
+
 
 class DClinic(Base):                      # detailed clinic, from id to clinic geocode
     __tablename__ = 'clinicgeo'
@@ -214,6 +228,8 @@ class Insurance(Base):
     insurance_type = Column(String(64))
     patien_name =Column(String(10))
     patien_id = Column(Integer, ForeignKey('patient.patient_id'))
+    insurance_patient = relationship('InsurancePatient', backref='insurance')
+    clinic_insurance = relationship('ClinicInsurance', backref='insurance')
 
     def __init__(self, insurance_id, insurance_type=None, patient_name=None):
         self.insurance_id = insurance_id
@@ -222,3 +238,18 @@ class Insurance(Base):
 
     def __repr__(self):
         return '<Insurance of Patient %r>' % (self.patien_name)
+
+
+class InsurancePatient(Base):
+    __tablename__ = 'insurance_patient'
+    id = Column(Integer, primary_key=True)
+    insurance_id = Column(Integer, ForeignKey('insurance.insurance_id'))
+    patient_id = Column(Integer, ForeignKey('patient.patient_id'))
+
+
+class OpenHour(Base):
+    __tablename__ = 'open_hour'
+    id = Column(Integer, primary_key=True)
+    day_type = Column(String(15))
+    opening = Column(String(128))
+    closing = Column(String(128))
