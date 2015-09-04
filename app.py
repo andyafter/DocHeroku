@@ -5,7 +5,7 @@ from database import *
 import flask
 import time
 import models.queue_api as qapi
-import models.registration as registration
+import models.registration as regis
 import json
 from sqlalchemy import update
 
@@ -261,7 +261,8 @@ def registration():
     if "queue_num" not in data:
         result["error"] = "at least tell me your queue number!"
         return flask.jsonify(**result)
-    result["success"] = registration.register(**data)
+    result["success"] = regis.register(**data)
+    print result
 
     return flask.jsonify(**result)
 

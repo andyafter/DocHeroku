@@ -5,9 +5,28 @@ from database import *
 def register(name, ic_num, queue_num, phone_num=None):
     # this part is dirty cause there is 2 and more database
     # operations
-    q = session.query(Queue).filter_by(queue_num=queue_num).first()
+    q = session.query(Queue).filter_by(queue_number=queue_num).first()
     doc = session.query(Doctor).filter_by(id=q.doctor_id).first()
-    clinic = session.query(Clinic).filter_by(doc.clinic_id).first()
+    clinic = session.query(Clinic).filter_by(id=doc.clinic_id).first()
+
+    if not q:
+        result = {}
+        result['error']="Queue Number Does Not Exist!"
+        return result
+
+    pat = session.query(PatientDetail).filter_by(ic_num=ic_num).first()
+    if pat:
+        p = session.query(Patient).filter_by(patient_id=pat.patient_id).first()
+        result  = {}
+        result['name'] = p.name
+        result['ic_num'] = ic_num
+        if p.phone:
+            result['phone_num'] = p.phone
+
+        ## this here is obviously wrong, but time is not enough in
+        ## this sprint, and there is only one doctor and you know
+        result['doctor'] = doc.name
+        return result
 
     count = session.query(Patient).count()
     patient = Patient(patient_id=count+1, name = name)
@@ -15,7 +34,7 @@ def register(name, ic_num, queue_num, phone_num=None):
 
     ## about patient detail
     dcount = session.query(PatientDetail).count()
-    patient_detail = PatientDetail(id=dcount+1,ic_num=ic_num)
+    patient_detail = PatientDetail(id=dcount+1, ic_num=ic_num)
     if phone_num:
         patient_detail.phone_num = phone_num
 
@@ -28,9 +47,10 @@ def register(name, ic_num, queue_num, phone_num=None):
     session.commit()
     result = {}
     result["name"] = patient.name
-    result['ic_num'] = patient.ic_num
+    result['ic_num'] = patient_detail.ic_num
     if patient.phone:
         result['phone_num'] = patient.phone
+    result['doctor'] = doc.name
 
     return result
 

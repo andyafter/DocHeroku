@@ -112,8 +112,8 @@ class PatientDetail(Base):
     phone_num = Column(String(64))
 
 
-    def __init__(self, patient_id, ic_num=None, phone_num=None):
-        self.patient_id = patient_id
+    def __init__(self, id, ic_num=None, phone_num=None):
+        self.patient_id = id
         self.ic_num = ic_num
         self.phone_num = phone_num
 
