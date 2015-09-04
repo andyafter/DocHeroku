@@ -132,11 +132,12 @@ class Clinic(Base):
     address_2 =  Column(String(256))
     postal =  Column(String(32))
     telephone =  Column(String(64))
-    fax =  Column(String(64))
+    fax =  Column(String(64)) #
     latitude = Column(String(256))
     longtitude = Column(String(256))
     # for operating hours I just stored them as strings
     # you guys figure it out
+    # refactoring
     weekday =  Column(String(256))
     saturday =  Column(String(256))
     sunday =  Column(String(256))
@@ -148,7 +149,7 @@ class Clinic(Base):
     doctors = relationship('Doctor', backref='clinic')
     clinic_insurance = relationship('ClinicInsurance', backref='clinic')
 
-    def __init__(self, id,name=None, aviva_code=None,\
+    def __init__(self, id, name=None, aviva_code=None,\
                  zone=None, estate=None,address1=None,address2=None,\
                  postal=None,telephone=None,fax=None,weekday=None,\
                  saturday=None,sunday=None,public_holiday=None,remarks=None,\

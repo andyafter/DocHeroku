@@ -100,7 +100,7 @@ def createClinic():
     count = session.query(Clinic).count()
     # this oine line is not necessary but still there might be some
     # problems
-    a = session.query(Clinic).filter_by(id=id+1).first()
+    a = session.query(Clinic).filter_by(id=count+1).first()
     if a:
         return "ID Already Exist"
     params = ['name', 'aviva_code',\
@@ -119,7 +119,7 @@ def createClinic():
     session.add(clinic)
     session.commit()
 
-    return str(count+1)
+    return str(count+1) # clinic.id
 
 
 
@@ -164,6 +164,7 @@ def deleteById(iden):
 
 @app.route('/queryById/<iden>')
 def queryById(iden):
+    # query clinic by id
     print iden
     #r = Clinic.
     r = session.query(Clinic).filter_by(id=iden).first()
@@ -200,7 +201,7 @@ def testQuery():
     return flask.jsonify(**res)
 
 
-@app.route('/queue',methods=["POST"])
+@app.route('/queue', methods=["POST"])
 def queue():
     data = request.get_json()
     print data
@@ -232,7 +233,7 @@ def queue():
     return flask.jsonify(**result)
 
 
-@app.route('/QNAuth',methods=["POST"])
+@app.route('/QNAuth', methods=["POST"])
 def qnauth():
     data = request.form
     a = session.query(Queue).filter_by(id=data['id']).first()
@@ -242,6 +243,7 @@ def qnauth():
         return "success"
 
     return "Auth Failed"
+
 
 @app.route('/registration',methods=['POST'])
 def registration():
@@ -261,8 +263,8 @@ def registration():
         return flask.jsonify(**result)
     result["success"] = registration.register(**data)
 
-
     return flask.jsonify(**result)
+
 
 @app.route('/registerdata',methods = ['POST'])
 def registData():
@@ -289,6 +291,7 @@ def registData():
     session.commit()
     result["success"] = "success"
     return flask.jsonify(**result)
+
 
 @app.route('/querypatient/<queue_num>')
 def queryPatient(queue_num):

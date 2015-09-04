@@ -26,8 +26,13 @@ def register(name, ic_num, queue_num, phone_num=None):
     session.add(patient_detail)
     session.add(patient)
     session.commit()
+    result = {}
+    result["name"] = patient.name
+    result['ic_num'] = patient.ic_num
+    if patient.phone:
+        result['phone_num'] = patient.phone
 
-    return "success"
+    return result
 
 def query_patient(queue_num):
     q = session.query(Queue).filter_by(queue_num=queue_num).first()

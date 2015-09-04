@@ -33,6 +33,11 @@ def generate_queue(clinic_name, uuid):
     docs = clinic.doctors
     docindex = random.randrange(0, len(docs))
     rows = session.query(Queue).count()
+
+    # make sure that it's not None
+    # fucking flask
+    if not docs[docindex].current_queue_num:
+        docs[docindex].current_queue_num = 0
     cur_queue = docs[docindex].current_queue_num
     queue_num = str(cur_queue+1)
 
