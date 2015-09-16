@@ -1,5 +1,5 @@
 import csv
-from database import *
+from origindb import *
 
 f = open("data.csv",'r')
 

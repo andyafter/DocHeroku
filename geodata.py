@@ -1,4 +1,4 @@
-from database import *
+from origindb import *
 import json
 
 Base.metadata.create_all(bind=engine)

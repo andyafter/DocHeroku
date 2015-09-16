@@ -1,4 +1,3 @@
-__author__ = 'andypan'
 from sqlalchemy import create_engine
 from sqlalchemy import *
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
@@ -15,6 +14,30 @@ metadata = MetaData(bind=engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
+'''
+location
+zone
+estate
+fax_no
+objectid
+sunday
+longitude
+telephone
+sn
+clinic
+monday_friday
+public_holiday
+address_1
+address_2
+updatedat
+latitude
+postal
+saturday
+createdat
+aviva_code
+'''
 
 
 # User class was only used for testing
@@ -148,7 +171,7 @@ class Clinic(Base):
         self.remarks = remarks
         self.latitude = latitude
         self.longtitude = longitude
-
+        
     def __repr__(self):
         return '<Clinic %r>' % (self.name)
 

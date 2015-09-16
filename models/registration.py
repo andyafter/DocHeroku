@@ -1,6 +1,6 @@
 __author__ = 'andypan'
 
-from database import *
+from origindb import *
 
 def register(name, ic_num, queue_num, phone_num=None):
     # this part is dirty cause there is 2 and more database

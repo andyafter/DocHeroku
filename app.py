@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from database import *
+from origindb import *
 import flask
 import time
 import models.queue_api as qapi

@@ -2,7 +2,7 @@ __author__ = 'andypan'
 # here I pack all the operation of the queue related api
 import time
 import random
-from database import *
+from origindb import *
 
 # if you want to query the max id number for new creations
 # a =  session.query(func.max(Clinic.id)).all()
