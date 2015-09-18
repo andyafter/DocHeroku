@@ -22,10 +22,11 @@ app = make_app()
 
 @app.route('/')
 def hello_world():
-    return qapi.testmodel()
+    #return qapi.testmodel()
     # tested how to write functions in models lol
     # but I'm not sure whether it is the right way
     #return a
+    return str(current_milli_time())
 
 @app.route('/refreshqueue/<iden>')
 def refresh_queue_by_id(iden):
@@ -81,47 +82,63 @@ def testinsert(iden):
 
 @app.route('/testpost',methods=["POST"])
 def testPost():
+    print "running"
+    print request
     data = request.get_json()
     print data
-    #print data["id"]
     return "SUCCESS"
 
 
 @app.route('/createClinic',methods=["POST"])
 def createClinic():
-    ## this one is dangerous, cause there should at least be some management part for the id management
-    ## this one assume that you already have an exclusive ID
-    ## in the new version you don't have to care about the ID number anymore cause it
-    ## can auto increment
-    data = request.form
-    print data.getlist('name')
+    data = request.get_json()
+    result = {}
     if not data:
-        return "No data!"
+        result["error"] = "No data!"
+        return flask.jsonify(**result)
     count = session.query(Clinic).count()
-    # this oine line is not necessary but still there might be some
+    # this one line is not necessary but still there might be some
     # problems
-    a = session.query(Clinic).filter_by(id=count+1).first()
+    a = session.query(Clinic).filter_by(name=data["name"]).first()
     if a:
-        return "ID Already Exist"
-    params = ['name', 'aviva_code',\
-                 'zone', 'estate','address1','address2',\
-                 'postal','telephone','fax','weekday',\
-                 'saturday','sunday','public_holiday','remarks','latitude','longitude']
-    clinic = Clinic(id = count+1)
+        result["error"] = "Clinic Already Exist"
+        return flask.jsonify(**result)
+    clinic = Clinic(id = current_milli_time())
     if 'name' in data:
         clinic.name = data['name']
+        result["name"] = data['name']
     if 'address_1' in data:
         clinic.address_1 = data['address_1']
+        result["address_1"] = data['address_1']
     if 'address_2' in data:
         clinic.address_2 = data['address_2']
+        result["address_2"] = data['address_2']
     print data
     print clinic
     session.add(clinic)
     session.commit()
+    result["id"] = clinic.id
+    return flask.jsonify(**result)
 
-    return str(count+1) # clinic.id
 
-
+@app.route('/searchClinic',methods=["POST"])
+def searchClinic():
+    data = request.get_json()
+    result = {}
+    if "name" not in data:
+        result["error"] = "No Name!"
+    a = session.query(Clinic).filter_by(name=data["name"]).first()
+    if not a:
+        result["error"] = "Clinic Does Not Exist!"
+        return flask.jsonify(**result)
+    result["id"] = a.id
+    result["name"] = a.name
+    result["address_1"] = a.address_1
+    result["address_2"] = a.address_2
+    result["telephone"] = a.telephone
+    result["estate"] = a.estate
+    print result
+    return flask.jsonify(**result)
 
 
 @app.route('/update',methods=["POST"])
@@ -140,15 +157,45 @@ def updateById():
 
     if 'name' in data:
         a.name = data['name']
-    if 'address1' in data:
-        a.address1 = data['address1']
-    if 'address2' in data:
-        a.address2 = data['address2']
+    if 'address_1' in data:
+        a.address_1 = data['address_1']
+    if 'address_2' in data:
+        a.address_2 = data['address_2']
+    if "estate" in data:
+        a.estate = data["estate"]
+    if "telephone" in data:
+        a.telephone = data["telephone"]
     ## if you want to add more simply add here
     session.add(a)
 
     session.commit()
     return "SUCCESS"
+
+@app.route('/updateClinic',methods=["POST"])
+def updateByName():
+    data = request.get_json()
+    result = {}
+    if "name" not in data:
+        result['error'] = "No Name!"
+        return flask.jsonify(**result)
+    clinic = session.query(Clinic).filter_by(name=data["name"]).first()
+    if not clinic:
+        result['error'] = "Clinic Not In Database!"
+        return flask.jsonify(**result)
+    if 'name' in data:
+        clinic.name = data['name']
+    if 'address_1' in data:
+        clinic.address_1 = data['address_1']
+    if 'address_2' in data:
+        clinic.address_2 = data['address_2']
+    if "estate" in data:
+        clinic.estate = data["estate"]
+    if "telephone" in data:
+        clinic.telephone = data["telephone"]
+
+    result["id"] = str(clinic.id)
+    result["name"] = clinic.name
+    return flask.jsonify(**result)
 
 
 @app.route('/deleteById/<iden>')
@@ -159,6 +206,23 @@ def deleteById(iden):
     session.delete(c)
     session.commit()
     return "success"
+
+@app.route('/deleteClinic', methods=["POST"])
+def deleteClinic():
+    data = request.get_json()
+    result = {}
+    if "name" not in data:
+        result['error'] = "No Name!"
+        return flask.jsonify(**result)
+    clinic = session.query(Clinic).filter_by(name=data["name"]).first()
+    if not clinic:
+        result['error'] = "Clinic Not In Database!"
+        return flask.jsonify(**result)
+    result["id"] = clinic.id
+    result["name"] = clinic.name
+    session.delete(clinic)
+    session.commit()
+    return flask.jsonify(**result)
     
     
 
