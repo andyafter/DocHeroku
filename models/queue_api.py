@@ -66,3 +66,4 @@ def generate_queue(clinic_name, uuid):
     result["key"] = k
     result["doctor"] = docs[docindex].name
     return result
+

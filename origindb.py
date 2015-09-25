@@ -91,7 +91,6 @@ class Patient(Base):
     queue = relationship('Queue', backref='patient')
     insurance_patient = relationship('InsurancePatient', backref='patient')
 
-
     def __init__(self, patient_id, name=None):
         self.patient_id = patient_id
         self.name = name
@@ -210,7 +209,6 @@ class DClinic(Base):                      # detailed clinic, from id to clinic g
     # this part is dangerous, and the updating part should be an atomic operation
     current_queue_num = Column(String(10))  # to store the the latest current queue num for this
     service_queue_num = Column(String(10))  # the queue number of the patient on servicing
-
 
     def __init__(self,id,latitude = None, longitude = None, current_queue_num = None,service_queue_num = None):
         self.id = id

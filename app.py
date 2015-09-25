@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask import render_template
 from flask import request
 from origindb import *
@@ -62,7 +62,7 @@ def queryall():
     r = {}
     r['result'] = res
 
-    return flask.jsonify(**r)
+    return Response(json.dumps(res),  mimetype='application/json')
 
 
 @app.route('/insert/<iden>')
@@ -170,6 +170,7 @@ def updateById():
 
     session.commit()
     return "SUCCESS"
+
 
 @app.route('/updateClinic',methods=["POST"])
 def updateByName():
@@ -295,6 +296,16 @@ def queue():
     result = qapi.generate_queue(data['clinic_name'],data['uuid'])
     print result
     return flask.jsonify(**result)
+
+
+@app.route('/doctors/<iden>', methods=["GET", "POST"])
+def doctors(iden):
+    data = request.get_json()
+    clinic = session.query(Clinic).filter_by(id=iden).first()
+    result = []
+    for i in clinic.doctors:
+        result.append(i.name)
+    return Response(json.dumps(result),  mimetype='application/json')
 
 
 @app.route('/QNAuth', methods=["POST"])

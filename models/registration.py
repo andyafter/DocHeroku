@@ -8,12 +8,12 @@ def register(name, ic_num, queue_num, phone_num=None):
     q = session.query(Queue).filter_by(queue_number=queue_num).first()
     doc = session.query(Doctor).filter_by(id=q.doctor_id).first()
     clinic = session.query(Clinic).filter_by(id=doc.clinic_id).first()
-
+    '''
     if not q:
         result = {}
         result['error']="Queue Number Does Not Exist!"
         return result
-
+    '''
     pat = session.query(PatientDetail).filter_by(ic_num=ic_num).first()
     if pat:
         p = session.query(Patient).filter_by(patient_id=pat.patient_id).first()

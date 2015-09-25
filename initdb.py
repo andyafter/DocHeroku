@@ -10,7 +10,9 @@ from origindb import *
 c = session.query(Clinic).filter_by(name='RIDGEWOOD MEDICAL CLINIC').first()
 
 
+names = ["Andy Pan", "Henry Morgan", "Bing Zhong"];
 # already done
+'''
 doc1 = Doctor(id=1)
 doc1.name= "Andy"
 c.doctors.append(doc1)
@@ -18,6 +20,17 @@ doc2 = Doctor(id=2)
 doc2.name= "Henry"
 session.add(doc1)
 session.add(doc2)
+'''
+n = 3
 
-session.commit()
+for i in range(1,192):
+    clinic = session.query(Clinic).filter_by(id=i).first()
+    for j in range(3):
+        doc = Doctor(id=n, name=names[j])
+        n+=1
+        clinic.doctors.append(doc)
+        session.commit()
+
+
+
 
